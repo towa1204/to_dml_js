@@ -1,6 +1,15 @@
 {
-	"tasks": {
-		"bundle": "deno run -A bundle.ts",
-		"dev": "deno run -A --watch=src/index.ts bundle.ts"
-	}
+  "tasks": {
+    "bundle": "deno run -A bundle.ts",
+    "dev": "deno run -A --watch=src/index.ts bundle.ts",
+    "check": "deno check **/*.ts",
+    "test": "deno test --allow-read --parallel",
+    "check:all": "deno fmt --check && deno lint && deno task check && deno task test"
+  },
+  "lint": {
+    "exclude": ["dist/"]
+  },
+  "fmt": {
+    "exclude": ["dist/", "README.md"]
+  }
 }

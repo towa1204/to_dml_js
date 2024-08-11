@@ -4,11 +4,11 @@ const input = "./src/index.ts";
 const output = "./dist/index.js";
 
 const result = await bundle(
-	input,
-	{
-		minify: false,
-		type: "module",
-	},
+  input,
+  {
+    minify: false,
+    type: "module",
+  },
 );
 const { code } = result;
 
