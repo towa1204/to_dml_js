@@ -1,1 +1,1 @@
-declare const csvdata: string;
+declare const ddl_info: string;
