@@ -2,13 +2,16 @@ import { parseTSV } from "./parser.ts";
 
 type ColumnInfo = Map<string, string>; // カラム名とデータ型のペア
 type TableInfo = { columns: ColumnInfo }; // テーブル名とカラム情報
-type SchemaInfo = Map<string, TableInfo>; // スキーマ名とテーブル情報
+export type SchemaInfo = Map<string, TableInfo>; // スキーマ名とテーブル情報
 
 export function newDDL(data: string) {
   const tsv = parseTSV(data);
   if (tsv[0].length !== 4) {
     throw new Error(`ddl_info length is not 4. actual: ${tsv[0].length}`);
   }
+
+  // 先頭行を削除
+  tsv.splice(0, 1);
 
   const result = new Map<string, SchemaInfo>();
 
