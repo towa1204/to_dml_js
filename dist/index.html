@@ -3,23 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./index.css" type="text/css">
     <title>to_dml_js</title>
 </head>
 <body>
 
-    <header>
-        <h1>シンプルなページ</h1>
-    </header>
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <!-- サイドバー項目がここに動的に追加される -->
+        </div>
+        <div class="content">
+            <h3>TSVデータをInsert文に変換します</h3>
+            <div class="textarea-container">
+                <textarea id="input-textarea" placeholder="ここにTSVデータをペーストしGenerateボタンをクリック" rows="6"></textarea>
+                <div class="options">
+                    <select id="option-select">
+                        <option value="uppercase">先頭ヘッダなし</option>
+                        <option value="lowercase">先頭ヘッダあり</option>
+                    </select>
+                    <button id="generate-button">Generate</button>
+                </div>
+                <textarea id="output-textarea" placeholder="ここに結果が表示されます" rows="6"></textarea>
+                <button id="copy-button">Copy</button>
+            </div>
+        </div>
+    </div>
 
-    <main>
-        <p>ここにコンテンツを追加してください。</p>
-    </main>
-
-    <footer>
-        <p>&copy; 2024 シンプルなHTMLテンプレート</p>
-    </footer>
-
-		<script type="text/javascript" src="./input_data.js"></script>
-		<script type="text/javascript" src="./index.js"></script>
+    <script type="text/javascript" src="./input_data.js"></script>
+    <script type="text/javascript" src="./index.js"></script>
 </body>
 </html>

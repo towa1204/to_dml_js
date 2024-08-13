@@ -12,5 +12,8 @@
   "fmt": {
     "exclude": ["dist/", "README.md"],
     "useTabs": false
+  },
+  "compilerOptions": {
+    "lib": ["dom", "es2015", "deno.ns"]
   }
 }

@@ -1,3 +1,4 @@
+import { formatFnMap } from "./format.ts";
 import { parseTSV } from "./parser.ts";
 
 type ColumnInfo = Map<string, string>; // カラム名とデータ型のペア
@@ -31,4 +32,44 @@ export function newDDL(data: string) {
   });
 
   return result;
+}
+
+export function genInsertSQL(
+  data: string,
+  ddls: Map<string, SchemaInfo>,
+  { schema, table }: { schema: string; table: string },
+) {
+  // 投入データのパース
+  const tsv = parseTSV(data);
+
+  const tableColumns = ddls.get(schema)?.get(table)?.columns;
+  if (tableColumns == undefined) {
+    throw new Error(`schema: ${schema}, table: ${table}のいずれかが不正`);
+  }
+
+  const sqlColumnNames = Array.from(tableColumns.keys()).join(", ");
+
+  const sqlColumnValues = tsv.map((row, rowNumber) => {
+    // stringを返す
+    // (col1, col2, col3)
+    if (row.length !== tableColumns.size) {
+      throw new Error(
+        `${rowNumber + 1}行目: テーブルのカラム数とデータのカラム数が不一致`,
+      );
+    }
+
+    // 3 : NUMBER toNUMBER
+    const dataTypes = Array.from(tableColumns.values());
+    const formattedValues = row.map((value, i) => {
+      const formatFn = formatFnMap.get(dataTypes[i]);
+      if (formatFn == undefined) {
+        throw new Error(`${dataTypes[i]}型の変換関数は用意されていません`);
+      }
+      return formatFn(value);
+    }).join(", ");
+
+    return `(${formattedValues})`;
+  }).join(", ");
+
+  return `INSERT INTO ${table} (${sqlColumnNames}) VALUES ${sqlColumnValues}`;
 }
