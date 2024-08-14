@@ -1,29 +1,19 @@
-import { genInsertSQL, newDDL, SchemaInfo } from "./ddl.ts";
+import { genInsertSQL, newDDL, TableIdentifier, TableInfo } from "./ddl.ts";
 
-let ddls: Map<string, SchemaInfo> | null = null;
-let schemaTableMap: Map<string, { schema: string; table: string }> | null =
-  null;
+let ddls: Map<TableIdentifier, TableInfo> | null = null;
 
 function load(ddl_info: string) {
   ddls = newDDL(ddl_info);
 
   // スキーマ.テーブル => {schema: string, table: string}
   // ↑特定のスキーマ.テーブルが選択されたときのkeyにつかう
-  schemaTableMap = new Map<string, { schema: string; table: string }>();
-  for (const [schema, table_info] of ddls) {
-    for (const table of table_info.keys()) {
-      schemaTableMap.set(`${schema}.${table}`, {
-        schema: schema,
-        table: table,
-      });
-    }
-  }
-  console.log(schemaTableMap);
+  const tableIdentifiers = ddls.keys();
+  console.log(tableIdentifiers);
   console.log(ddls);
 
   // スキーマ.テーブル の一覧を取得しDOMを生成
   // データを用意（ここではサンプルデータとして配列を使用）
-  createSideBar(schemaTableMap.keys());
+  createSideBar(tableIdentifiers);
 }
 load(ddl_info);
 
@@ -80,13 +70,13 @@ document.getElementById("generate-button")?.addEventListener("click", () => {
 
   // ### SQL生成処理 ###
   let sql: string | null = null;
-  if (ddls !== null && schemaTableMap !== null) {
-    const tableName = schemaTableMap.get(selectedTable.id);
-    if (tableName == undefined) {
+  if (ddls !== null) {
+    const tableInfo = ddls.get(selectedTable.id);
+    if (tableInfo == undefined) {
       throw new Error(`${selectedTable.id}の値が不正`);
     }
     try {
-      sql = genInsertSQL(inputText, ddls, tableName);
+      sql = genInsertSQL(inputText, tableInfo);
     } catch (err) {
       alert(err.message);
       return;

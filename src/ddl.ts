@@ -2,33 +2,36 @@ import { formatFnMap } from "./format.ts";
 import { parseTSV } from "./parser.ts";
 
 type ColumnInfo = Map<string, string>; // カラム名とデータ型のペア
-type TableInfo = { columns: ColumnInfo }; // テーブル名とカラム情報
-export type SchemaInfo = Map<string, TableInfo>; // スキーマ名とテーブル情報
+export type TableInfo = {
+  schemaName: string;
+  tableName: string;
+  columns: ColumnInfo;
+};
+export type TableIdentifier = string;
 
-export function newDDL(data: string) {
+export function newDDL(data: string): Map<TableIdentifier, TableInfo> {
   const tsv = parseTSV(data);
   if (tsv[0].length !== 4) {
     throw new Error(`ddl_info length is not 4. actual: ${tsv[0].length}`);
   }
-
   // 先頭行を削除
   tsv.splice(0, 1);
 
-  const result = new Map<string, SchemaInfo>();
+  const result = new Map<TableIdentifier, TableInfo>();
 
-  tsv.forEach(([schema, tableName, columnName, dataType]) => {
-    if (!result.has(schema)) {
-      result.set(schema, new Map<string, TableInfo>());
+  tsv.forEach(([schemaName, tableName, columnName, dataType]) => {
+    const tableIdentifier: TableIdentifier = `${schemaName}.${tableName}`;
+    if (!result.has(tableIdentifier)) {
+      result.set(tableIdentifier, {
+        schemaName: schemaName,
+        tableName: tableName,
+        columns: new Map<string, string>(),
+      });
     }
 
-    const schemaMap = result.get(schema)!;
-
-    if (!schemaMap.has(tableName)) {
-      schemaMap.set(tableName, { columns: new Map<string, string>() });
-    }
-
-    const tableInfo = schemaMap.get(tableName)!;
+    const tableInfo = result.get(tableIdentifier)!;
     tableInfo.columns.set(columnName, dataType);
+    result.set(tableIdentifier, tableInfo);
   });
 
   return result;
@@ -36,17 +39,12 @@ export function newDDL(data: string) {
 
 export function genInsertSQL(
   data: string,
-  ddls: Map<string, SchemaInfo>,
-  { schema, table }: { schema: string; table: string },
+  tableInfo: TableInfo,
 ) {
   // 投入データのパース
   const tsv = parseTSV(data);
 
-  const tableColumns = ddls.get(schema)?.get(table)?.columns;
-  if (tableColumns == undefined) {
-    throw new Error(`schema: ${schema}, table: ${table}のいずれかが不正`);
-  }
-
+  const tableColumns = tableInfo.columns;
   const sqlColumnNames = Array.from(tableColumns.keys()).join(", ");
 
   const sqlColumnValues = tsv.map((row, rowNumber) => {
@@ -71,5 +69,5 @@ export function genInsertSQL(
     return `(${formattedValues})`;
   }).join(", ");
 
-  return `INSERT INTO ${table} (${sqlColumnNames}) VALUES ${sqlColumnValues}`;
+  return `INSERT INTO ${tableInfo.tableName} (${sqlColumnNames}) VALUES ${sqlColumnValues}`;
 }
