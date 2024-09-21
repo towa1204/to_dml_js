@@ -19,9 +19,8 @@ function parseDelimitedData(data: string, delimiter: string): string[][] {
     // 列数が一致しない場合はエラーをスロー
     if (columns.length !== columnCount) {
       throw new Error(
-        `Row ${
-          index + 1
-        } has inconsistent column count. Expected ${columnCount}, got ${columns.length}`,
+        `投入データの列数に一貫性がありません。\n` +
+          `1行目: ${columnCount}列\n${index + 1}行目: ${columns.length}列`,
       );
     }
 
