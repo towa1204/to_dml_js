@@ -69,5 +69,5 @@ export function genInsertSQL(
     return `(${formattedValues})`;
   }).join(", ");
 
-  return `INSERT INTO ${tableInfo.tableName} (${sqlColumnNames}) VALUES ${sqlColumnValues}`;
+  return `INSERT INTO ${tableInfo.tableName} (${sqlColumnNames}) VALUES ${sqlColumnValues};`;
 }
