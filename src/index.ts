@@ -60,13 +60,25 @@ document.getElementById("generate-button")?.addEventListener("click", () => {
   ) {
     throw new Error("Not Found or invalid type #output-textarea");
   }
-  const inputText = inputTextArea.value;
+  let inputText = inputTextArea.value;
   if (inputText === "") {
     alert("データが空です。入力してください");
     return;
   }
 
   // オプションの値を取得
+
+  // 先頭ヘッダオプションの処理
+  const firstHeaderOption = document.querySelector("#first-header-option");
+  if (
+    firstHeaderOption == null ||
+    !(firstHeaderOption instanceof HTMLSelectElement)
+  ) {
+    throw new Error("Not Found or invalid type #first-header-option");
+  }
+  if (firstHeaderOption.value === "contains") {
+    inputText = inputText.split("\n").slice(1).join("\n");
+  }
 
   // ### SQL生成処理 ###
   let sql: string | null = null;
