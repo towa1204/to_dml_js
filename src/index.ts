@@ -68,6 +68,17 @@ document.getElementById("generate-button")?.addEventListener("click", () => {
 
   // オプションの値を取得
 
+  // ファイルタイプオプションの処理
+  const fileTypeOption = document.querySelector("#file-type-option");
+  if (
+    fileTypeOption == null || !(fileTypeOption instanceof HTMLSelectElement)
+  ) {
+    throw new Error("Not Found or invalid type #file-type-option");
+  }
+  if (!(fileTypeOption.value === "tsv" || fileTypeOption.value === "csv")) {
+    throw new Error("Error file type is invald");
+  }
+
   // 先頭ヘッダオプションの処理
   const firstHeaderOption = document.querySelector("#first-header-option");
   if (
@@ -88,7 +99,7 @@ document.getElementById("generate-button")?.addEventListener("click", () => {
       throw new Error(`${selectedTable.id}の値が不正`);
     }
     try {
-      sql = genInsertSQL(inputText, tableInfo);
+      sql = genInsertSQL(inputText, tableInfo, fileTypeOption.value);
     } catch (err) {
       alert(err.message);
       return;
