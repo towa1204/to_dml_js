@@ -9,13 +9,19 @@ body {
 }
 
 .sidebar {
-	width: 300px;
+	width: 250px;
 	background-color: #f4f4f4;
-	padding: 0;
-	box-sizing: border-box;
-	overflow-y: auto;
-	border-right: 1px solid #ccc;
-	flex-shrink: 0;
+	padding: 0px;
+	/* box-sizing: border-box; */
+	overflow: auto;
+	/* border-right: 1px solid #ccc; */
+	/* flex-shrink: 0; */
+}
+
+.resizer {
+  width: 5px;
+  cursor: ew-resize;
+  background-color: #ccc;
 }
 
 .sidebar-item {

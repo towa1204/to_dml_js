@@ -17,6 +17,31 @@ function load(ddl_info: string) {
 }
 load(ddl_info);
 
+document.getElementById("resizer")?.addEventListener("mousedown", (e) => {
+  let isResizing = true;
+  const sidebar = document.getElementById("sidebar");
+
+  document.addEventListener("mousemove", resize);
+  document.addEventListener("mouseup", stopResize);
+
+  function resize(e: MouseEvent) {
+    if (!isResizing) return;
+
+    const newWidth = e.clientX;
+    if (newWidth > 100 && newWidth < 600) {
+      // 幅の最小/最大を設定
+      sidebar!.style.width = `${newWidth}px`;
+    }
+  }
+
+  function stopResize() {
+    isResizing = false;
+
+    document.removeEventListener("mousemove", resize);
+    document.removeEventListener("mouseup", stopResize);
+  }
+});
+
 function createSideBar(tableNames: IterableIterator<string>) {
   // サイドバーのコンテナを取得
   const sidebar = document.getElementById("sidebar");
