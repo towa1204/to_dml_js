@@ -126,7 +126,9 @@ document.getElementById("generate-button")?.addEventListener("click", () => {
     try {
       sql = genInsertSQL(inputText, tableInfo, fileTypeOption.value);
     } catch (err) {
-      alert(err.message);
+      if (err instanceof Error) {
+        alert(err.message);
+      }
       return;
     }
   }
