@@ -27,9 +27,9 @@ jobs:
         run: zip -r dist.zip dist/
 
       - name: Create GitHub Release
-        uses: ncipollo/release-action@v1
+        uses: svenstaro/upload-release-action@v2
         with:
-          artifacts: dist.zip
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: dist.zip
+          tag: ${{ github.ref }}
+          overwrite: true
