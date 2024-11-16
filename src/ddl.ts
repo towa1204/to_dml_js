@@ -1,5 +1,5 @@
 import { formatFnMap } from "./format.ts";
-import { parseTSV } from "./parser.ts";
+import { parseCSV, parseTSV } from "./parser.ts";
 
 type ColumnInfo = Map<string, string>; // カラム名とデータ型のペア
 export type TableInfo = {
@@ -40,19 +40,26 @@ export function newDDL(data: string): Map<TableIdentifier, TableInfo> {
 export function genInsertSQL(
   data: string,
   tableInfo: TableInfo,
+  fileType: "tsv" | "csv",
 ) {
   // 投入データのパース
-  const tsv = parseTSV(data);
+  let parsedData: string[][] = [];
+  if (fileType === "tsv") {
+    parsedData = parseTSV(data);
+  } else {
+    parsedData = parseCSV(data);
+  }
 
   const tableColumns = tableInfo.columns;
   const sqlColumnNames = Array.from(tableColumns.keys()).join(", ");
 
-  const sqlColumnValues = tsv.map((row, rowNumber) => {
+  const sqlColumnValues = parsedData.map((row, rowNumber) => {
     // stringを返す
     // (col1, col2, col3)
     if (row.length !== tableColumns.size) {
       throw new Error(
-        `${rowNumber + 1}行目: テーブルのカラム数とデータのカラム数が不一致`,
+        `${rowNumber + 1}行目: テーブルのカラム数とデータのカラム数が不一致\n` +
+          `またはファイルタイプ(CSV, TSV)の選択が誤っている可能性があります。`,
       );
     }
 
@@ -69,5 +76,5 @@ export function genInsertSQL(
     return `(${formattedValues})`;
   }).join(", ");
 
-  return `INSERT INTO ${tableInfo.tableName} (${sqlColumnNames}) VALUES ${sqlColumnValues}`;
+  return `INSERT INTO ${tableInfo.tableName} (${sqlColumnNames}) VALUES ${sqlColumnValues};`;
 }

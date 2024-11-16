@@ -17,6 +17,31 @@ function load(ddl_info: string) {
 }
 load(ddl_info);
 
+document.getElementById("resizer")?.addEventListener("mousedown", (_e) => {
+  let isResizing = true;
+  const sidebar = document.getElementById("sidebar");
+
+  document.addEventListener("mousemove", resize);
+  document.addEventListener("mouseup", stopResize);
+
+  function resize(e: MouseEvent) {
+    if (!isResizing) return;
+
+    const newWidth = e.clientX;
+    if (newWidth > 100 && newWidth < 600) {
+      // 幅の最小/最大を設定
+      sidebar!.style.width = `${newWidth}px`;
+    }
+  }
+
+  function stopResize() {
+    isResizing = false;
+
+    document.removeEventListener("mousemove", resize);
+    document.removeEventListener("mouseup", stopResize);
+  }
+});
+
 function createSideBar(tableNames: IterableIterator<string>) {
   // サイドバーのコンテナを取得
   const sidebar = document.getElementById("sidebar");
@@ -60,13 +85,36 @@ document.getElementById("generate-button")?.addEventListener("click", () => {
   ) {
     throw new Error("Not Found or invalid type #output-textarea");
   }
-  const inputText = inputTextArea.value;
+  let inputText = inputTextArea.value;
   if (inputText === "") {
     alert("データが空です。入力してください");
     return;
   }
 
   // オプションの値を取得
+
+  // ファイルタイプオプションの処理
+  const fileTypeOption = document.querySelector("#file-type-option");
+  if (
+    fileTypeOption == null || !(fileTypeOption instanceof HTMLSelectElement)
+  ) {
+    throw new Error("Not Found or invalid type #file-type-option");
+  }
+  if (!(fileTypeOption.value === "tsv" || fileTypeOption.value === "csv")) {
+    throw new Error("Error file type is invald");
+  }
+
+  // 先頭ヘッダオプションの処理
+  const firstHeaderOption = document.querySelector("#first-header-option");
+  if (
+    firstHeaderOption == null ||
+    !(firstHeaderOption instanceof HTMLSelectElement)
+  ) {
+    throw new Error("Not Found or invalid type #first-header-option");
+  }
+  if (firstHeaderOption.value === "contains") {
+    inputText = inputText.split("\n").slice(1).join("\n");
+  }
 
   // ### SQL生成処理 ###
   let sql: string | null = null;
@@ -76,9 +124,11 @@ document.getElementById("generate-button")?.addEventListener("click", () => {
       throw new Error(`${selectedTable.id}の値が不正`);
     }
     try {
-      sql = genInsertSQL(inputText, tableInfo);
+      sql = genInsertSQL(inputText, tableInfo, fileTypeOption.value);
     } catch (err) {
-      alert(err.message);
+      if (err instanceof Error) {
+        alert(err.message);
+      }
       return;
     }
   }

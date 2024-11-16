@@ -12,18 +12,31 @@
         <div class="sidebar" id="sidebar">
             <!-- サイドバー項目がここに動的に追加される -->
         </div>
+        <div class="resizer" id="resizer"></div>
         <div class="content">
-            <h3>TSVデータをInsert文に変換します</h3>
+            <h3>TSVやCSVデータをInsert文に変換します</h3>
             <div class="textarea-container">
-                <textarea id="input-textarea" placeholder="ここにTSVデータをペーストしGenerateボタンをクリック" rows="6"></textarea>
+                <textarea
+                    id="input-textarea"
+                    placeholder="1. サイドバーからテーブル名を選択(Ctrl+Fで検索推奨)
+2. ここにTSV or CSVデータをペースト
+3. 下2つのオプションを選択し、Generateボタンをクリック"
+                    rows="6"></textarea>
                 <div class="options">
-                    <select id="option-select">
-                        <option value="uppercase">先頭ヘッダなし</option>
-                        <option value="lowercase">先頭ヘッダあり</option>
+                    <select id="file-type-option">
+                        <option value="tsv">投入データ：TSV</option>
+                        <option value="csv">投入データ：CSV</option>
+                    </select>
+                    <select id="first-header-option">
+                        <option value="noncontains">先頭ヘッダなし</option>
+                        <option value="contains">先頭ヘッダあり</option>
                     </select>
                     <button id="generate-button">Generate</button>
                 </div>
-                <textarea id="output-textarea" placeholder="ここに結果が表示されます" rows="6"></textarea>
+                <textarea 
+                    id="output-textarea"
+                    placeholder="ここに変換結果(Insert文)が表示されます"
+                    rows="6"></textarea>
                 <button id="copy-button">Copy</button>
             </div>
         </div>

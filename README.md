@@ -1,5 +1,8 @@
 # to_dml_js
 
-TSVからInsert文を生成
+CSV/TSV形式のテーブルデータをInsert文に変換するツール
 
-https://scrapbox.io/lsadsfj-private/Excel上のテーブルのテストデータをInsert文に変換したい
+Snowflakeでの利用を想定
+
+使い方は下記ページを参照
+https://scrapbox.io/lsadsfj/to_dml_js
