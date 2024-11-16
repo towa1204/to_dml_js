@@ -17,7 +17,7 @@ function load(ddl_info: string) {
 }
 load(ddl_info);
 
-document.getElementById("resizer")?.addEventListener("mousedown", (e) => {
+document.getElementById("resizer")?.addEventListener("mousedown", (_e) => {
   let isResizing = true;
   const sidebar = document.getElementById("sidebar");
 
